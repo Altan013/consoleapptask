@@ -1,4 +1,5 @@
 ﻿using ConsoleProject.Models;
+using ConsoleProject.Services;
 using System;
 
 namespace ConsoleProject
@@ -8,7 +9,7 @@ namespace ConsoleProject
         static void Main(string[] args)
         {
             HumanResourceManager HumanResourceManager = new HumanResourceManager();
-               
+
             do
 
             {
@@ -29,32 +30,35 @@ namespace ConsoleProject
                 switch (chooseNum)
                 {
                     case 1.1:
-                        GetDepartment(ref humanResourceManager);
-
+                        GetDepartment(ref HumanResourceManager);
                         Console.Clear();
-
-
                         break;
                     case 1.2:
+                        AddDepartment(ref HumanResourceManager);
                         Console.Clear();
                         break;
                     case 1.3:
+                        EditDepartment(ref HumanResourceManager);
                         Console.Clear();
                         break;
                     case 2.1:
+                        GetDepartment(ref HumanResourceManager);
                         Console.Clear();
                         break;
                     case 2.2:
+                        GetDepartment(ref HumanResourceManager);
                         Console.Clear();
                         break;
                     case 2.3:
-                        AddDepartment(ref humanResourceManager);
+                        AddEmployee(ref HumanResourceManager);
                         Console.Clear();
                         break;
                     case 2.4:
+                        EditEmployee(ref HumanResourceManager);
                         Console.Clear();
                         break;
                     case 2.5:
+                        RemoveEmployee(ref HumanResourceManager);
                         Console.Clear();
                         break;
 
@@ -98,9 +102,9 @@ namespace ConsoleProject
             static void GetDepartment(ref HumanResourceManager humanResourceManager)
             {
 
-                if (humanResourceManager.departments.Length > 0)
+                if (humanResourceManager.Departments.Length > 0)
                 {
-                    foreach (var item in humanResourceManager.departments)
+                    foreach (var item in humanResourceManager.Departments)
                     {
                         Console.WriteLine($"{item} - Maas ortalamasi: {item.CalcAverageSalary(item)}\n");
                     }
@@ -117,7 +121,7 @@ namespace ConsoleProject
             static void EditDepartment(ref HumanResourceManager humanResourceManager)
             {
                 GetDepartment(ref humanResourceManager);
-                if (humanResourceManager.departments.Length > 0)
+                if (humanResourceManager.Departments.Length > 0)
                 {
                     string name;
                     bool check = true;
@@ -144,13 +148,74 @@ namespace ConsoleProject
                         }
                         check = true;
 
-                    } while (humanResourceManager.FindDepartment(name)) == null;
+                    } while (humanResourceManager.FindDepartment(name) == null);
 
 
 
                 }
 
             }
+        }
+
+        static void RemoveEmployee(ref HumanResourceManager hrManager)
+        {
+            Employee[] Employees = null;
+            Employee[] newEmployees = new Employee[0];
+            int counter = 0;
+            foreach (Employee item in Employees)
+            {
+                Array.Resize(ref newEmployees, newEmployees.Length + 1);
+                newEmployees[counter++] = item;
+            }
+            Employees = newEmployees;
+        }
+
+        private static void EditEmployee(ref HumanResourceManager humanResourceManager)
+        {
+            throw new NotImplementedException();
+        }
+
+        static void AddEmployee(ref HumanResourceManager hrManager)
+        {
+            Console.WriteLine("Elave etmek istediyiniz iscinin ad ve soyadini daxil edin: ");
+        reEnterFullname:
+            string fullname = Console.ReadLine();
+            string[] full = fullname.Split(' ');
+            if (String.IsNullOrWhiteSpace(fullname) || full.Length < 2 || full[0].Length < 3 || full[1].Length < 5)
+            {
+                Console.WriteLine("Ad ve soyadi duzgun daxil edin...");
+                goto reEnterFullname;
+            }
+
+            Console.WriteLine("\nIscinin vezifesini daxil edin: ");
+        reEnterPositionName:
+            string positionName = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(positionName))
+            {
+                Console.WriteLine("Vezife adini duzgun qeyd edin...");
+                goto reEnterPositionName;
+            }
+
+            Console.WriteLine("\nElave etmek istediyiniz iscinin ayliq maasini daxil edin: ");
+        reEnterSalary:
+            string salary = Console.ReadLine();
+            double checkSalary = 0;
+            while (!double.TryParse(salary, out checkSalary) || checkSalary < 250)
+            {
+                Console.WriteLine("Meblegi duzgun daxil edin...");
+                goto reEnterSalary;
+            }
+
+            Console.WriteLine("\nIscini elave etmek istediyiniz departament adini daxil edin: ");
+        reEnterDepartmentName:
+            string departmentName = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(departmentName))
+            {
+                Console.WriteLine("Ad ve soyadi duzgun daxil edin...");
+                goto reEnterDepartmentName;
+            }
+
+            hrManager.AddEmployee(fullname, positionName, checkSalary, departmentName);
         }
 
     }

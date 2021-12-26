@@ -76,5 +76,15 @@ namespace ConsoleProject.Services
             Array.Resize(ref _departament, _departament.Length + 1);
             _departament[_departament.Length - 1] = department;
         }
+
+        internal object FindDepartment(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal bool CheckName(string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

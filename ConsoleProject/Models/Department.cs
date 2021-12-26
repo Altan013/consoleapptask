@@ -49,6 +49,11 @@ namespace ConsoleProject.Models
             }
             return totalSalary / Count;
         }
+
+        internal object CalcAverageSalary(Department item)
+        {
+            throw new NotImplementedException();
+        }
         //public override string ToString()
         //{
         //    return $"{Fullname} {Position} {Salary} {DepartmentName}"
