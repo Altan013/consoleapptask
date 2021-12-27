@@ -22,6 +22,11 @@ namespace ConsoleProject.Models
             string Naming = departamentName.ToUpper().Substring(0, 2);
             No = No + Naming + Count;
         }
+
+        public Employee(string departmentName)
+        {
+        }
+
         public override string ToString()
         {
             return $"Fullname: {FullName}\nPosition {Position}\nSalary {Salary}\nDepartment {DepartamentName}\nNo {No}";
