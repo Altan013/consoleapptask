@@ -1,450 +1,730 @@
-﻿using ConsoleProject.Models;
-using ConsoleProject.Services;
+﻿using HumanResourceManagement.Models;
+using HumanResourceManagement.Services;
 using System;
 
-namespace ConsoleProject
+namespace HumanResourceManagement
 {
     class Program
     {
         static void Main(string[] args)
         {
-            HumanResourceManager HumanResourceManager = new HumanResourceManager();
+            HumanResourceManager hrManager = new HumanResourceManager();
 
             do
-
             {
-                Console.WriteLine("--------------------------------IHumanResourceManager-------------------------------");
-                Console.WriteLine("Etmek istediyiniz emeliyyatin qarshisindaki reqemi daxil edin");
-                Console.WriteLine("1.1 - Departamentlerin siyahisini gostermek");
-                Console.WriteLine("1.2 - Departament yaratmaq");
-                Console.WriteLine("1.3 - Departamentde deyishiklik etmek");
-                Console.WriteLine("2.1 - Ishcilerin siyahisini gostermek");
-                Console.WriteLine("2.2 - Departamentdeki iscilerin siyahisini gostermrek");
-                Console.WriteLine("2.3 - Isci elave etmek");
-                Console.WriteLine("2.4 - Isci uzerinde deyisiklik etmek");
-                Console.WriteLine("2.5 - Departamentden isci silinmesi");
+                Console.WriteLine("------------------Human Resource Management------------------");
+                Console.WriteLine("Etmek istediyniz emeliyyatin qarsisindaki nomreni daxil edin:\n");
+                Console.WriteLine("1 - Departamentlerin siyahisini goster");
+                Console.WriteLine("2 - Yeni departament yarat");
+                Console.WriteLine("3 - Departamentde deyisiklik et");
+                Console.WriteLine("4 - Butun iscilerin siyahisini goster");
+                Console.WriteLine("5 - Secilmis departamentdeki iscilerin siyahisini goster");
+                Console.WriteLine("6 - Yeni isci elave et");
+                Console.WriteLine("7 - Isci uzerinde deyisiklik et");
+                Console.WriteLine("8 - Secilmis departamentdeki iscini sil");
+                Console.Write("\nDaxil Et: ");
 
-                string choose = Console.ReadLine();
-                double chooseNum;
-                double.TryParse(choose, out chooseNum);
-                switch (chooseNum)
+                string select = Console.ReadLine();
+                int selectNum;
+                int.TryParse(select, out selectNum);
+
+                switch (selectNum)
                 {
-                    case 1.1:
-                        GetDepartment(ref HumanResourceManager);
+                    case 1:
                         Console.Clear();
+                        GetDepartments(ref hrManager);
                         break;
-                    case 1.2:
-                        AddDepartment(ref HumanResourceManager);
+                    case 2:
                         Console.Clear();
+                        AddDepartment(ref hrManager);
                         break;
-                    case 1.3:
-                        EditDepartment(ref HumanResourceManager);
+                    case 3:
                         Console.Clear();
+                        EditDepartment(ref hrManager);
                         break;
-                    case 1.4:
-                        SearchEmployee(HumanResourceManager);
-                        break;
-                    case 2.1:
-                        GetDepartment(ref HumanResourceManager);
+                    case 4:
                         Console.Clear();
+                        GetEmployees(ref hrManager);
                         break;
-                    case 2.2:
-                        GetDepartment(ref HumanResourceManager);
+                    case 5:
                         Console.Clear();
+                        GetEmployeesByDepartmentName(ref hrManager);
                         break;
-                    case 2.3:
-                        AddEmployee(HumanResourceManager);
+                    case 6:
                         Console.Clear();
+                        AddEmployee(ref hrManager);
                         break;
-                    case 2.4:
-                        EditEmployee(HumanResourceManager);
+                    case 7:
                         Console.Clear();
+                        EditEmployee(ref hrManager);
                         break;
-                    case 2.5:
-                        RemoveEmployee(HumanResourceManager);
+                    case 8:
                         Console.Clear();
+                        RemoveEmployee(ref hrManager);
                         break;
-                    
-
                     default:
                         Console.Clear();
-                        Console.WriteLine("Duzgun daxil et");
+                        Console.WriteLine("Nomreni duzgun daxil edin...\n");
                         break;
                 }
-
             } while (true);
+        }
 
-            static void AddDepartment(ref HumanResourceManager humanResourceManager)
+        static void AddDepartment(ref HumanResourceManager hrManager)
+        {
+            Console.WriteLine("Yaratmaq istediyiniz departamentin adini daxil edin:");
+        reEnterDepartmentName:
+            Console.Write("=> ");
+            string departmentname = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(departmentname) || departmentname.Length < 2)
             {
-                Console.WriteLine("Departmentin adini daxil et");
-                string name = Console.ReadLine();
-                Console.WriteLine("Isci sayini daxil et");
-                string WorkerLimit = Console.ReadLine();
-                int WorkerLimitNum = 0;
-                while (!int.TryParse(WorkerLimit, out WorkerLimitNum) || WorkerLimitNum <= 0)
-
-                {
-                    Console.WriteLine("Duzgun daxil et");
-                    WorkerLimit = Console.ReadLine();
-                }
-
-                Console.WriteLine("SalaryLimiti daxil et");
-                string salaryLimit = Console.ReadLine();
-                double salaryLimitNum = 0;
-                while (!double.TryParse(salaryLimit, out salaryLimitNum) || salaryLimitNum <= 249)
-                {
-                    Console.WriteLine("Duzgun daxil et");
-                    salaryLimit = Console.ReadLine();
-                }
-
-
-
-
-
+                Console.WriteLine("Departament adini duzgun daxil edin...");
+                goto reEnterDepartmentName;
             }
-            static void GetDepartment(ref HumanResourceManager humanResourceManager)
+
+            foreach (Department item in hrManager.Departments)
             {
-
-                if (humanResourceManager.Departments.Length > 0)
-                {
-                    foreach (var item in humanResourceManager.Departments)
-                    {
-                        Console.WriteLine($"{item} - Maas ortalamasi: {item.CalcAverageSalary(item)}\n");
-                    }
-                }
-
-                else
+                if (item.Name.ToLower() == departmentname.ToLower())
                 {
                     Console.Clear();
-                    Console.WriteLine("Sistemde Department Movcud deyil\n");
-
-
+                    Console.WriteLine("Daxil etdiyiniz adda departament artiq movcuddur.\n");
+                    return;
                 }
             }
-            static void EditDepartment(ref HumanResourceManager humanResourceManager)
+
+            Console.WriteLine("\nDepartamentde maximum var ola bilecek isci sayini daxil edin:");
+        reEnterWorkerLimit:
+            Console.Write("=> ");
+            string workers = Console.ReadLine();
+            int workersNum;
+            while (!int.TryParse(workers, out workersNum) || workersNum < 1)
             {
-                GetDepartment(ref humanResourceManager);
-                if (humanResourceManager.Departments.Length > 0)
-                {
-                    string name;
-                    bool check = true;
-                    do
-                    {
-                        if (check)
-                        {
-                            Console.WriteLine("Deyisiklik edeceyiniz departmenti daxil edin");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Departmentin adini duzgun qebul edin");
-                        }
-                        name = Console.ReadLine();
-                        check = false;
-
-                    } while (humanResourceManager.CheckName(name));
-                    do
-                    {
-                        if (check)
-                        {
-                            Console.WriteLine("Daxil edilen department duzgun deyil");
-                            name = Console.ReadLine();
-                        }
-                        check = true;
-
-                    } while (humanResourceManager.FindDepartment(name) == null);
-
-
-
-                }
-
+                Console.WriteLine("Isci sayini duzgun daxil edin...");
+                goto reEnterWorkerLimit;
             }
+
+            Console.WriteLine("\nDepartamentde butun iscilere verilecek ayliq cemi meblegi daxil edin:");
+        reEnterSalaryLimit:
+            Console.Write("=> ");
+            string salary = Console.ReadLine();
+            double salaryNum;
+            while (!double.TryParse(salary, out salaryNum) || salaryNum < 250)
+            {
+                Console.WriteLine("Meblegi duzgun daxil edin...");
+                goto reEnterSalaryLimit;
+            }
+
+            if (salaryNum / workersNum < 250)
+            {
+                Console.WriteLine($"\nBir nefer isciye minimum 250 AZN maas vere bilersiniz. {workersNum} nefer isci ucun max maas limiti {salaryNum} AZN teskil ede bilmez.");
+                Console.WriteLine($"Minimum teyin ede bileceyiniz maas: {workersNum * 250} AZN\n");
+
+                Console.WriteLine("Isci sayi limitini ve maas limitini duzgun teyin edin:");
+                Console.WriteLine("Isci sayi:");
+                goto reEnterWorkerLimit;
+            }
+
+            Console.Clear();
+            Console.WriteLine("Departament yaradildi...\n");
+
+            hrManager.AddDepartment(departmentname, workersNum, salaryNum);
         }
 
-        static void SearchEmployee(HumanResourceManager humanResourceManager)
+        static void AddEmployee(ref HumanResourceManager hrManager)
         {
-            if (humanResourceManager.Departments.Length > 0)
+            if (hrManager.Departments.Length <= 0)
             {
-                string search;
+                Console.WriteLine("Cari departament bazasi bosdur. Ilk once departament yaratmalisiniz.\n");
+                return;
+            }
 
-                do
+            Console.WriteLine("Iscini hansi departamente elave etmek isteyirsiniz:");
+        reEnterDepartmentName:
+            Console.Write("=> ");
+            string departmentName = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(departmentName))
+            {
+                Console.WriteLine("Departament adini duzgun daxil edin...");
+                goto reEnterDepartmentName;
+            }
+
+            bool check = false;
+            string fullname = string.Empty;
+            string positionName = string.Empty;
+            double checkSalary = 0;
+            foreach (Department item in hrManager.Departments)
+            {
+                if (item.Name.ToLower() == departmentName.ToLower())
                 {
-                    Console.WriteLine("Axtaris deyerini daxil edin:");
-                    search = Console.ReadLine();
+                    check = true;
+                    departmentName = item.Name;
 
-                } while (string.IsNullOrWhiteSpace(search));
-
-                var searchedEmployees = humanResourceManager.SearchEmployee(search);
-
-                if (searchedEmployees.Length > 0)
-                {
-                    Console.WriteLine("Axtarisa uygun isciler: \n");
-                    foreach (var item in searchedEmployees)
+                    if (item.WorkerLimit <= item.WorkerCounter())
                     {
-                        Console.WriteLine(item);
+                        Console.WriteLine($"\"{item.Name}\" departamenti isci sayi limitini doldurub...\n");
+                        return;
+                    }
+
+                    if (item.SalaryLimit - item.SalaryCounter() == 0 || item.SalaryLimit - item.SalaryCounter() < 250)
+                    {
+                        Console.WriteLine($"\"{item.Name}\" departamenti ya maas limitini doldurub deye, ya da hazirda yaratdiginiz isciye vere bileceyiniz max maas 250 AZN-den az oldugu ucun isci yarada bilmirsiniz...\n");
+                        return;
+                    }
+
+                    Console.WriteLine("\nElave etmek istediyiniz iscinin tam adini (ad ve soyad) daxil edin:");
+                reEnterFullname:
+                    Console.Write("=> ");
+                    fullname = Console.ReadLine();
+                    string[] full = fullname.Split(' ');
+                    if (String.IsNullOrWhiteSpace(fullname) || full.Length < 2)
+                    {
+                        Console.WriteLine("Ad ve soyadi duzgun daxil edin...");
+                        goto reEnterFullname;
+                    }
+
+                    Console.WriteLine("\nIscinin vezifesini daxil edin:");
+                reEnterPositionName:
+                    Console.Write("=> ");
+                    positionName = Console.ReadLine();
+                    if (String.IsNullOrWhiteSpace(positionName) || positionName.Length < 2)
+                    {
+                        Console.WriteLine("Vezife adini duzgun qeyd edin...");
+                        goto reEnterPositionName;
+                    }
+
+
+                    Console.WriteLine("\nElave etmek istediyiniz iscinin ayliq maasini daxil edin:");
+                reEnterSalary:
+                    Console.Write("=> ");
+                    string salary = Console.ReadLine();
+                    if (!double.TryParse(salary, out checkSalary) || checkSalary < 250)
+                    {
+                        Console.WriteLine("Meblegi duzgun daxil edin...");
+                        goto reEnterSalary;
+                    }
+
+                    foreach (Department department in hrManager.Departments)
+                    {
+                        if (department.Name.ToLower() == departmentName.ToLower())
+                        {
+                            while (department.SalaryLimit < department.SalaryCounter() + checkSalary)
+                            {
+                                Console.WriteLine($"\n\"{department.Name}\" departamenti ucun nezerde tutulan maas limitini kecmemelisiniz...");
+                                Console.WriteLine($"Limit: Max {department.SalaryLimit} AZN");
+                                Console.WriteLine($"Departament uzre iscilere verilen cari cemi maas: {department.SalaryCounter()} AZN");
+                                Console.WriteLine($"Hal-hazirda departament uzre yaratdiginiz isciye max {department.SalaryLimit - department.SalaryCounter()} AZN maas vere bilersiniz.\n");
+                                Console.Write("Meblegi duzgun daxil edin: ");
+                                goto reEnterSalary;
+                            }
+                        }
+                        break;
+                    }
+                    break;
+                }
+            }
+
+            if (check)
+            {
+                Console.Clear();
+                Console.WriteLine("Isci elave olundu...\n");
+            }
+
+            if (check == false)
+            {
+                Console.Clear();
+                Console.WriteLine($"\"{departmentName}\" adli departament movcud deyil...\n");
+            }
+
+            hrManager.AddEmployee(fullname, positionName, checkSalary, departmentName);
+        }
+
+        static void GetDepartments(ref HumanResourceManager hrManager)
+        {
+            if (hrManager.Departments.Length <= 0)
+            {
+                Console.Clear();
+                Console.WriteLine("Departament movcud deyil. Departament daxil edin.\n");
+                return;
+            }
+
+            Console.WriteLine("Departamentlerin siyahisi:\n");
+            Console.WriteLine("------------------------------------------");
+            foreach (Department item in hrManager.Departments)
+            {
+                Console.WriteLine(item);
+                Console.WriteLine("------------------------------------------");
+            }
+
+            hrManager.GetDepartments();
+        }
+
+        static void EditDepartment(ref HumanResourceManager hrManager)
+        {
+            if (hrManager.Departments.Length <= 0)
+            {
+                Console.WriteLine("Hec bir departament movcud deyil...\n");
+                return;
+            }
+
+            Console.WriteLine("Departamentlerin siyahisi:\n");
+            Console.WriteLine("----------------------------------------");
+            foreach (Department item in hrManager.Departments)
+            {
+                Console.WriteLine(item);
+                Console.WriteLine("----------------------------------------");
+            }
+
+            Console.WriteLine("\nDeyisiklik etmek istediyiniz departamentin adini daxil edin: ");
+        reEnterNameNow:
+            Console.Write("=> ");
+            string nameNow = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(nameNow))
+            {
+                Console.WriteLine("Duzgun daxil edin:");
+                goto reEnterNameNow;
+            }
+
+            bool checker = true;
+            string newName = string.Empty;
+            foreach (Department item in hrManager.Departments)
+            {
+                if (item.Name.ToLower() == nameNow.ToLower())
+                {
+                    checker = false;
+                    Console.WriteLine("\nSecdiyiniz departament adini hansi ada deyismek isteyirsiniz? Daxil edin:");
+                reEnterNewName:
+                    Console.Write("=> ");
+                    newName = Console.ReadLine();
+                    if (String.IsNullOrWhiteSpace(newName) || newName.Length < 2)
+                    {
+                        Console.WriteLine("Duzgun daxil edin:");
+                        goto reEnterNewName;
+                    }
+
+                    if (nameNow.ToLower() == newName.ToLower())
+                    {
+                        Console.WriteLine("\nYeni ad evvelki adla eyni ola bilmez...");
+                        Console.WriteLine("Duzgun daxil edin:");
+                        goto reEnterNewName;
+                    }
+
+                    foreach (Department item2 in hrManager.Departments)
+                    {
+                        if (item2.Name.ToLower() == newName.ToLower())
+                        {
+                            Console.Clear();
+                            Console.WriteLine($"\"{newName}\" adli departament artiq movcuddur. Iki eyni adda departament ola bilmez...\n");
+                            return;
+                        }
+                    }
+
+                    Console.Clear();
+                    Console.WriteLine("Departament adi deyisdirildi.\n");
+                    break;
+                }
+            }
+
+            if (checker)
+            {
+                Console.WriteLine("Daxil etdiyiniz adda departament movcud deyil. Duzgun daxil edin: ");
+                goto reEnterNameNow;
+            }
+
+            hrManager.EditDepartament(nameNow, newName);
+        }
+
+        static void GetEmployees(ref HumanResourceManager hrManager)
+        {
+            int countWorker = 0;
+            foreach (Department department in hrManager.Departments)
+            {
+                foreach (Employee employee in department.Employees)
+                {
+                    if (employee != null)
+                    {
+                        countWorker++;
                     }
                 }
-                else
-                {
-                    Console.WriteLine("====================================================\n");
-                    Console.WriteLine("Axtarisa uygun isci tapilmadi!");
-                }
-            }
-            else
-            {
-                Console.WriteLine("====================================================\n");
-                Console.WriteLine("Sistemde hecbir department ve isci movcud deyil");
             }
 
+            if (countWorker == 0)
+            {
+                Console.WriteLine("Hec bir isci movcud deyil...\n");
+                return;
+            }
+
+            foreach (Department department in hrManager.Departments)
+            {
+                foreach (Employee employee in department.Employees)
+                {
+                    if (employee != null)
+                    {
+                        Console.WriteLine(employee);
+                        Console.WriteLine("------------------------------------------");
+                    }
+                }
+            }
         }
 
-        static void RemoveEmployee(HumanResourceManager humanResourceManager)
+        static void GetEmployeesByDepartmentName(ref HumanResourceManager hrManager)
         {
-
-            if (humanResourceManager.Departments.Length <= 0)
+            if (hrManager.Departments.Length <= 0)
             {
-                Console.WriteLine("====================================================\n");
-                Console.WriteLine("Sistemde hec bir department ve isci movcud deyil");
+                Console.WriteLine("Hec bir departament movcud deyil...\n");
+                return;
             }
-            else
+
+            Console.WriteLine("Departamentlerin siyahisi:\n");
+            Console.WriteLine("------------------------------------------");
+            foreach (Department item in hrManager.Departments)
             {
-                string departmentname;
-                Department department = null;
-                bool check = true;
-                do
-                {
-                    if (check)
-                        Console.WriteLine("Silmek istediyiniz iscinin departmentini daxil edin:");
-                    else
-                        Console.WriteLine("Daxil etdiyiniz department movcud deyil, yeniden daxil edin:");
+                Console.WriteLine(item);
+                Console.WriteLine("------------------------------------------");
+            }
 
-                    departmentname = Console.ReadLine();
-                    department = humanResourceManager.FindDepartmentByName(departmentname);
-                    check = false;
+            Console.WriteLine("\nHansi departamentdeki iscilere baxmaq isteyirsiniz?");
+            Console.WriteLine("Departament adini daxil edin:");
+        reEnterDpName:
+            Console.Write("=> ");
+            string dpname = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(dpname) || dpname.Length < 2)
+            {
+                Console.WriteLine("Duzgun daxil edin: ");
+                goto reEnterDpName;
+            }
 
-                } while (department == null);
-
-                if (department.Employees.Length <= 0)
+            bool check = true;
+            foreach (Department department in hrManager.Departments)
+            {
+                if (department.Name.ToLower() == dpname.ToLower())
                 {
-                    Console.WriteLine("====================================================\n");
-                    Console.WriteLine("Daxil etdiyiniz departmentde hecbir isci movcud deyil");
-                    return;
-                }
-                else
-                {
-                    string no;
-                    check = true;
-                    do
+                    Console.Clear();
+                    int cntworker = 0;
+                    foreach (Employee employee in department.Employees)
                     {
-                        if (check)
-                            Console.WriteLine("Silmek istediyiniz iscinin nomresini daxil edin:");
-                        else
-                            Console.WriteLine("Daxil etdiyiniz nomre yanlisdir, yeniden daxil edin");
-
-                        no = Console.ReadLine();
-                        check = false;
-
-                        foreach (var item in department.Employees)
+                        if (employee != null)
                         {
-                            if (item.No == no)
-                            {
-                                check = true;
+                            cntworker++;
+                        }
+                    }
+                    if (cntworker == 0)
+                    {
+                        Console.WriteLine("Secilmis departamentde isci movcud deyil...\n");
+                        return;
+                    }
 
+                    foreach (Employee employee in department.Employees)
+                    {
+                        if (employee != null)
+                        {
+                            Console.WriteLine(employee);
+                            Console.WriteLine("------------------------------------------");
+                        }
+                    }
+                    check = false;
+                    break;
+                }
+            }
+
+            if (check)
+            {
+                Console.Clear();
+                Console.WriteLine("Daxil etdiyiniz adda departament movcud deyil...\n");
+                return;
+            }
+        }
+
+        static void EditEmployee(ref HumanResourceManager hrManager)
+        {
+            int countWorker = 0;
+            foreach (Department department in hrManager.Departments)
+            {
+                foreach (Employee employee in department.Employees)
+                {
+                    if (employee != null)
+                    {
+                        countWorker++;
+                    }
+                }
+            }
+
+            if (countWorker == 0)
+            {
+                Console.WriteLine("Hec bir isci movcud deyil. Emeliyyati icra etmek ucun hec olmasa 1 nefer isci olmalidir.\n");
+                return;
+            }
+
+            Console.WriteLine("Butun iscilerin siyahisi:\n");
+            Console.WriteLine("------------------------------------------");
+            foreach (Department department in hrManager.Departments)
+            {
+                foreach (Employee employee in department.Employees)
+                {
+                    if (employee != null)
+                    {
+                        Console.WriteLine(employee);
+                        Console.WriteLine("------------------------------------------");
+                    }
+                }
+            }
+
+            Console.WriteLine("\nDeyisiklik etmek istediyiniz iscinin nomresini daxil edin:");
+        reEnterWorkerNo:
+            Console.Write("=> ");
+            string workerNo = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(workerNo))
+            {
+                Console.WriteLine("Duzgun daxil edin:");
+                goto reEnterWorkerNo;
+            }
+
+            Console.WriteLine("\nDeyisiklik etmek istediyiniz iscinin tam adini daxil edin:");
+        reEnterFullname:
+            Console.Write("=> ");
+            string fullname = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(fullname))
+            {
+                Console.WriteLine("Duzgun daxil edin:");
+                goto reEnterFullname;
+            }
+
+
+            string newSalary = null;
+            double newSalaryNum = 0;
+            string newPosition = null;
+            bool checker = true;
+            foreach (Department department in hrManager.Departments)
+            {
+                foreach (Employee employee in department.Employees)
+                {
+                    if (employee != null)
+                    {
+                        if ((employee.No.ToLower() == workerNo.ToLower()) && (employee.Fullname.ToLower() == fullname.ToLower()))
+                        {
+                            Console.Clear();
+                            Console.WriteLine(employee);
+
+                            Console.WriteLine("\nIsci uzerinde etmek istediyiniz emeliyyatin qarsisindaki nomreni daxil edin:\n");
+                            Console.WriteLine("\t1 - Iscinin aldigi maasda duzelis etmek");
+                            Console.WriteLine("\t2 - Iscinin vezifesinde duzelis etmek");
+                            Console.WriteLine("\t3 - Hem iscinin aldigi maasda, hem de vezifesinde duzelis etmek");
+
+                        reEnterEditWorker:
+                            Console.Write("=> ");
+                            string select = Console.ReadLine();
+                            int selectNum;
+                            if (!int.TryParse(select, out selectNum))
+                            {
+                                Console.WriteLine("Duzgun daxil edin...");
+                                goto reEnterEditWorker;
                             }
 
-
-                        }
-
-                    } while (check == false);
-
-                    humanResourceManager.RemoveEmployee(no, departmentname);
-                }
-
-
-            }
-        }
-
-        static void EditEmployee(HumanResourceManager humanResourceManager)
-        {
-            if (humanResourceManager.Departments.Length <= 0)
-            {
-                Console.WriteLine("====================================================\n");
-                Console.WriteLine("Sistemde hec bir department ve isci movcud deyil");
-            }
-            else
-            {
-                string departmentname;
-                Department department = null;
-                bool check = true;
-                do
-                {
-                    if (check)
-                        Console.WriteLine("Deyisdirmek istediyiniz iscinin departmentini daxil edin:");
-                    else
-                        Console.WriteLine("Daxil etdiyiniz department movcud deyil, yeniden daxil edin:");
-
-                    departmentname = Console.ReadLine();
-                    department = humanResourceManager.FindDepartmentByName(departmentname);
-                    check = false;
-
-                } while (department == null);
-
-                if (department.Employees.Length <= 0)
-                {
-                    Console.WriteLine("====================================================\n");
-                    Console.WriteLine("Daxil etdiyiniz departmentde hecbir isci movcud deyil");
-                    return;
-                }
-                else
-                {
-                    string no;
-                    check = true;
-                    do
-                    {
-                        if (check)
-                            Console.WriteLine("Iscinin nomresini daxil edin:");
-                        else
-                            Console.WriteLine("Daxil etdiyiniz nomre yanlisdir, yeniden daxil edin");
-
-                        no = Console.ReadLine();
-                        check = false;
-
-                        foreach (var item in department.Employees)
-                        {
-                            if (item.No == no)
+                            switch (selectNum)
                             {
-                                Console.WriteLine($"Iscinin tam adi: {item.FullName} - Iscinin vezifesi: {item.Position} - Iscinin maasi: {item.Salary} ");
-                                check = true;
+                                case 1:
+                                    Console.WriteLine("\nIscinin yeni maasini daxil edin:");
+                                reEnterNewSalary:
+                                    Console.Write("=> ");
+                                    newSalary = Console.ReadLine();
+                                    if (!double.TryParse(newSalary, out newSalaryNum) || newSalaryNum < 250)
+                                    {
+                                        Console.WriteLine("Duzgun daxil edin...");
+                                        goto reEnterNewSalary;
+                                    }
 
+                                    while (department.SalaryLimit < department.SalaryCounter() - employee.Salary + newSalaryNum)
+                                    {
+                                        Console.WriteLine($"\n\"{department.Name}\" departamenti ucun nezerde tutulan maas limitini kecmemelisiniz...");
+                                        Console.WriteLine($"Limit: Max {department.SalaryLimit} AZN");
+                                        Console.WriteLine($"Duzelis etdiyiniz isciye max {department.SalaryLimit - (department.SalaryCounter() - employee.Salary)} AZN maas vere bilersiniz...");
+                                        Console.Write("Meblegi duzgun daxil edin: ");
+                                        goto reEnterNewSalary;
+                                    }
+
+                                    Console.WriteLine("Maasda duzelis olundu...\n");
+                                    break;
+                                case 2:
+                                    Console.WriteLine("\nIscinin yeni vezifesini daxil edin:");
+                                reEnternewPosition:
+                                    Console.Write("=> ");
+                                    newPosition = Console.ReadLine();
+                                    if (String.IsNullOrWhiteSpace(newPosition) || newPosition.Length < 2)
+                                    {
+                                        Console.WriteLine("Duzgun daxil edin...");
+                                        goto reEnternewPosition;
+                                    }
+
+                                    Console.WriteLine("Vezifede duzelis olundu...\n");
+                                    break;
+                                case 3:
+                                    Console.WriteLine("\nIscinin yeni maasini daxil edin:");
+                                reEnterNewSalary1:
+                                    Console.Write("=> ");
+                                    newSalary = Console.ReadLine();
+                                    if (!double.TryParse(newSalary, out newSalaryNum) || newSalaryNum < 250)
+                                    {
+                                        Console.WriteLine("Duzgun daxil edin...");
+                                        goto reEnterNewSalary1;
+                                    }
+
+                                    while (department.SalaryLimit < department.SalaryCounter() - employee.Salary + newSalaryNum)
+                                    {
+                                        Console.WriteLine($"\n\"{department.Name}\" departamenti ucun nezerde tutulan maas limitini kecmemelisiniz...");
+                                        Console.WriteLine($"Limit: Max {department.SalaryLimit} AZN");
+                                        Console.WriteLine($"Duzelis etdiyiniz isciye max {department.SalaryLimit - (department.SalaryCounter() - employee.Salary)} AZN maas vere bilersiniz...");
+                                        Console.Write("Meblegi duzgun daxil edin: ");
+                                        goto reEnterNewSalary1;
+                                    }
+
+                                    Console.WriteLine("\nIscinin yeni vezifesini daxil edin:");
+                                reEnternewPosition2:
+                                    Console.Write("=> ");
+                                    newPosition = Console.ReadLine();
+                                    if (String.IsNullOrWhiteSpace(newPosition) || newPosition.Length < 2)
+                                    {
+                                        Console.WriteLine("Duzgun daxil edin...");
+                                        goto reEnternewPosition2;
+                                    }
+
+                                    Console.WriteLine("Secdiyiniz iscinin hem vezifesinde, hem de aldigi maasda duzelis etdiniz...\n");
+                                    break;
+                                default:
+                                    Console.WriteLine("Nomreni duzgun daxil edin:");
+                                    goto reEnterEditWorker;
                             }
-
-
+                            checker = false;
+                            break;
                         }
-
-
-                    } while (check == false);
-
-                    string position;
-                    check = true;
-                    do
-                    {
-                        if (check)
-                            Console.WriteLine("Iscinin yeni vezifesini daxil edin:");
-                        else
-                            Console.WriteLine("Vezife adinda reqem olmamalidir, yeniden daxil edin");
-
-                        position = Console.ReadLine();
-                        check = false;
-
-                    } while (!humanResourceManager.CheckName(position));
-
-                    double salary;
-                    string salarystr;
-                    check = true;
-                    do
-                    {
-
-                        if (check)
-                            Console.WriteLine("Iscinin yeni maasini daxil edin:");
-                        else
-                            Console.WriteLine("Maas yazarken herf olmamalidir ve maas 250den asagi olmamalidir, yeniden daxil edin");
-
-                        salarystr = Console.ReadLine();
-                        check = false;
-
-                    } while (!double.TryParse(salarystr, out salary) || salary < 250);
-
-                    humanResourceManager.EditEmployee(departmentname, no, position, salary);
-
+                    }
                 }
-
             }
 
+            if (checker)
+            {
+                Console.Clear();
+                Console.WriteLine("Daxil etdiyiniz isci nomresi ve ya iscinin ad soyadi yanlisdir. Deyisiklik ede bilmeyiniz ucun her ikisini duzgun daxil etmelisiniz...\n");
+                return;
+            }
+
+            hrManager.EditEmployee(workerNo, fullname, newPosition, newSalaryNum);
         }
 
-        static void AddEmployee(HumanResourceManager humanResourceManager)
+        static void RemoveEmployee(ref HumanResourceManager hrManager)
         {
-            if (humanResourceManager.Departments.Length <= 0)
+            int counter = 0;
+            foreach (Department department in hrManager.Departments)
             {
-                Console.WriteLine("Sistemde hec bir department movcud deyil");
-            }
-            else
-            {
-                string departmentname;
-                Department department = null;
-                bool check = true;
-                do
+                if (department.Employees.Length > 0)
                 {
-                    if (check)
-                        Console.WriteLine("Isci elave etmek istediyiniz departmenti daxil edin:");
-                    else
-                        Console.WriteLine("Daxil etdiyiniz department movcud deyil, yeniden daxil edin:");
-
-                    departmentname = Console.ReadLine();
-                    department = humanResourceManager.FindDepartmentByName(departmentname);
-                    check = false;
-
-                } while (department == null);
-
-                if (department.WorkerLimit <= department.Employees.Length)
-                {
-                    Console.WriteLine("Departmentin isci limiti doludur, isci elave ede bilmezsiniz!");
-
-                    return;
+                    counter++;
                 }
-
-                string fullname;
-                check = true;
-                do
-                {
-                    if (check)
-                        Console.WriteLine("Iscinin tam adini (ad, soyad seklinde) daxil edin:");
-                    else
-                        Console.WriteLine("Tam adi duzgun daxil edin");
-
-                    fullname = Console.ReadLine();
-                    check = false;
-
-                } while (!humanResourceManager.CheckFullName(fullname));
-
-                string position;
-                check = true;
-                do
-                {
-                    if (check)
-                        Console.WriteLine("Iscinin vezifesini daxil edin:");
-                    else
-                        Console.WriteLine("Vezife adi boyuk herfnen baslamali ve reqem olmamalidir, yeniden daxil edin");
-
-                    position = Console.ReadLine();
-                    check = false;
-
-                } while (!humanResourceManager.CheckName(position));
-
-                double salary;
-                string salarystr;
-                check = true;
-                do
-                {
-
-                    if (check)
-                        Console.WriteLine("Iscinin maasini daxil edin:");
-                    else
-                        Console.WriteLine("Maas yazarken herf olmamalidir ve maas 250den asagi olmamalidir, yeniden daxil edin");
-
-                    salarystr = Console.ReadLine();
-                    check = false;
-
-                } while (!double.TryParse(salarystr, out salary) || salary < 250);
-
-                if (department.TotalSalary(department) + salary > department.SalaryLimit)
-                {
-                    Console.WriteLine("Elave etmek istediyiniz iscinin maasi toplam limitten artiqdir");
-                    return;
-                }
-
-                humanResourceManager.AddEmployee(departmentname, fullname, position, salary);
             }
 
+            if (counter == 0)
+            {
+                Console.WriteLine("Hec bir isci movcud deyil. Emeliyyati icra etmek ucun hec olmasa 1 departament ve 1 nefer isci olmalidir.\n");
+                return;
+            }
+
+            Console.WriteLine("Departamentlerin siyahisi:\n");
+            Console.WriteLine("------------------------------------------");
+            foreach (Department item in hrManager.Departments)
+            {
+                Console.WriteLine(item);
+                Console.WriteLine("------------------------------------------");
+            }
+
+            Console.WriteLine("\nHansi departamenten isci silmek isteyirsiniz?");
+            Console.Write("Departament adini daxil edin: ");
+        reEnterSelectDepartment:
+            string selectDepartment = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(selectDepartment) || selectDepartment.Length < 2)
+            {
+                Console.WriteLine("Duzgun daxil edin:");
+                goto reEnterSelectDepartment;
+            }
+
+            string DelWorker = string.Empty;
+            bool find = true;
+            foreach (Department department in hrManager.Departments)
+            {
+                if (department.Name.ToLower() == selectDepartment.ToLower())
+                {
+                    find = false;
+                    int cntworker = 0;
+                    foreach (Employee employee in department.Employees)
+                    {
+                        if (employee != null)
+                        {
+                            cntworker++;
+                        }
+                    }
+                    if (cntworker == 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"\"{department.Name}\" departamentinde isci yoxdur...\n");
+                        return;
+                    }
+
+                    Console.Clear();
+                    Console.WriteLine($"\"{department.Name}\" departamentindeki iscilerin siyahisi:\n");
+                    Console.WriteLine("------------------------------------------");
+                    foreach (Employee employee in department.Employees)
+                    {
+                        if (employee != null)
+                        {
+                            Console.WriteLine(employee);
+                            Console.WriteLine("------------------------------------------");
+                        }
+                    }
+
+                    Console.WriteLine("\nSilmek istediyiniz iscinin nomresini daxil edin:");
+                reEnterDelWorker:
+                    DelWorker = Console.ReadLine();
+                    if (String.IsNullOrWhiteSpace(DelWorker) || DelWorker.Length < 6)
+                    {
+                        Console.WriteLine("Duzgun daxil edin:");
+                        goto reEnterDelWorker;
+                    }
+
+                    bool deleted = false;
+                    for (int i = 0; i < department.Employees.Length; i++)
+                    {
+                        if (department.Employees[i] != null)
+                        {
+                            if (department.Employees[i].No.ToLower() == DelWorker.ToLower())
+                            {
+                                deleted = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (deleted)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Isci silindi...\n");
+                    }
+
+                    if (deleted == false)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Daxil etdiyiniz nomrede isci movcud deyil...\n");
+                        return;
+                    }
+
+                    break;
+                }
+            }
+
+            if (find)
+            {
+                Console.Clear();
+                Console.WriteLine("Daxil etdiyiniz adda departament yoxdur...\n");
+                return;
+            }
+
+            hrManager.RemoveEmployee(DelWorker, selectDepartment);
 
         }
 

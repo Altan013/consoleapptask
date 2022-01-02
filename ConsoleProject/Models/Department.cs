@@ -2,18 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ConsoleProject.Models
+namespace HumanResourceManagement.Models
 {
     class Department
     {
-        public Department(string name, int workerlimit, double salarylimit)
-        {
-            this.Name = name;
-            this.WorkerLimit = workerlimit;
-            this.SalaryLimit = salarylimit;
-        }
-
-        private string _name;
         public string Name
         {
             get
@@ -22,15 +14,14 @@ namespace ConsoleProject.Models
             }
             set
             {
-                if (CheckName(value))
+                if (value.Length < 2)
                 {
-                    _name = value;
+                    return;
                 }
-
+                _name = value;
             }
         }
-
-        private int _workerLimit;
+        private string _name;
         public int WorkerLimit
         {
             get
@@ -39,15 +30,14 @@ namespace ConsoleProject.Models
             }
             set
             {
-                if (value > 0)
+                if (value < 1)
                 {
-                    _workerLimit = value;
+                    return;
                 }
-
+                _workerLimit = value;
             }
         }
-
-        private double _salaryLimit;
+        private int _workerLimit;
         public double SalaryLimit
         {
             get
@@ -56,70 +46,82 @@ namespace ConsoleProject.Models
             }
             set
             {
-                if (value > 249)
+                if (value < 250)
                 {
-                    _salaryLimit = value;
+                    return;
                 }
+                _salaryLimit = value;
             }
         }
-        public Employee[] Employees = new Employee[0];
+        private double _salaryLimit;
+        public Employee[] Employees;
 
-
-        public double TotalSalary(Department department)
+        public double CalcSalaryAverage()
         {
-
-            double totalsalary = 0;
-            foreach (var item in department.Employees)
-            {
-                totalsalary += item.Salary;
-            }
-            return totalsalary;
-        }
-
-
-        public double CalcSalaryAverage(Department department)
-        {
-            double totalsalary = 0;
+            double total = 0;
             int counter = 0;
-            foreach (var item in department.Employees)
-            {
-                totalsalary += item.Salary;
-                counter++;
-            }
-            return totalsalary / counter;
 
-        }
-
-        public bool CheckName(string str)
-        {
-            if (!string.IsNullOrWhiteSpace(str))
+            foreach (Employee item in Employees)
             {
-                if (str.Length > 1)
+                if (item != null)
                 {
-                    if (Char.IsUpper(str[0]))
-                    {
-                        foreach (var chr in str)
-                        {
-                            if (Char.IsLetter(chr) == false)
-                            {
-                                return false;
-
-                            }
-                        }
-                        return true;
-                    }
-
+                    total += item.Salary;
+                    counter++;
                 }
             }
 
-            return false;
+            if (counter == 0)
+            {
+                return 0;
+            }
+
+            return total / counter;
         }
 
-        internal object CalcAverageSalary(Department item)
+        public int WorkerCounter()
         {
-            throw new NotImplementedException();
+            int total = 0;
+
+            foreach (Employee item in Employees)
+            {
+                if (item != null)
+                {
+                    total++;
+                }
+            }
+
+            return total;
+        }
+
+        public double SalaryCounter()
+        {
+            //double salaryNow = 0;
+
+            //foreach (Employee item in Employees)
+            //{
+            //    if (item != null)
+            //    {
+            //        salaryNow += item.Salary;
+            //    }
+            //}
+
+            //return salaryNow;
+
+            return CalcSalaryAverage() * WorkerCounter();
+        }
+
+        public Department(string name, int workerLimit, double salaryLimit)
+        {
+            Name = name;
+            WorkerLimit = workerLimit;
+            SalaryLimit = salaryLimit;
+
+            Employees = new Employee[0];
+        }
+
+        public override string ToString()
+        {
+            return $"Departament adi: {Name}\nIsci sayi limiti: Max {WorkerLimit} nefer\nFaktiki isci sayi: {WorkerCounter()} nefer\nIscilerin maas limiti (cemi): Max {SalaryLimit} AZN / ay\nIscilerin maas ortalamasi: {CalcSalaryAverage()} AZN";
         }
     }
-
 }
-

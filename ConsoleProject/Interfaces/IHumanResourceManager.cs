@@ -1,20 +1,18 @@
-﻿using ConsoleProject.Models;
+﻿using HumanResourceManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ConsoleProject.Interfaces
+namespace HumanResourceManagement.Interfaces
 {
     interface IHumanResourceManager
     {
-        void AddDepartment(string name, int workerlimit, double salarylimit);
-        void GetDepartments();
-        void EditDepartments(string name, string newname);
-        void AddEmployee(string departmentname, string fullname, string position, double salary);
-        void EditEmployee(string departmentname, string no, string position, double salary);
-        Employee[] SearchEmployee(string search);
-        void RemoveEmployee(string no, string departmentname);
-        Department FindDepartmentByName(string name);
-        bool CheckName(string str);
+        public Department[] Departments { get; }
+        void AddDepartment(string name, int workerLimit, double salaryLimit);
+        Department[] GetDepartments();
+        void EditDepartament(string name, string newName);
+        void AddEmployee(string fullname, string position, double salary, string departmentName);
+        void RemoveEmployee(string employeeNo, string departmentName);
+        void EditEmployee(string employeeNo, string fullname, string position, double salary);
     }
 }

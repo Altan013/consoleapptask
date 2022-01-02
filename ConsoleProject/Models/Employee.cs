@@ -2,34 +2,76 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ConsoleProject.Models
+namespace HumanResourceManagement.Models
 {
     class Employee
     {
-        private static int Count = 1000;
+        private static int _counter = 1000;
         public string No { get; set; }
-        public string FullName { get; set; }
-        public string Position { get; set; }
-        public double Salary { get; set; }
-        public string DepartamentName { get; set; }
-
-        public Employee(string position, string fullname, double salary, string departamentName)
+        public string Fullname
         {
-            FullName = fullname;
+            get
+            {
+                return _fullname;
+            }
+            set
+            {
+                string[] array = value.Split(' ');
+                if (array.Length < 2)
+                {
+                    return;
+                }
+                _fullname = value;
+            }
+        }
+        private string _fullname;
+        public string Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                if (value.Length < 2)
+                {
+                    return;
+                }
+                _position = value;
+            }
+        }
+        private string _position;
+        public double Salary
+        {
+            get
+            {
+                return _salary;
+            }
+            set
+            {
+                if (value < 250)
+                {
+                    return;
+                }
+                _salary = value;
+            }
+        }
+        private double _salary;
+        public string DepartmentName { get; set; }
+
+        public Employee(string fullname, string position, double salary, string departmentname)
+        {
+            Fullname = fullname;
             Position = position;
             Salary = salary;
-            DepartamentName = departamentName;
-            string Naming = departamentName.ToUpper().Substring(0, 2);
-            No = No + Naming + Count;
-        }
-
-        public Employee(string departmentName)
-        {
+            DepartmentName = departmentname;
+            _counter++;
+            No += departmentname.ToUpper().Substring(0, 2) + _counter;
         }
 
         public override string ToString()
         {
-            return $"Fullname: {FullName}\nPosition {Position}\nSalary {Salary}\nDepartment {DepartamentName}\nNo {No}";
+            return $"Ad soyad: {Fullname}\nVezife: {Position}\nMaas: {Salary} AZN\nDepartament adi: {DepartmentName}\nIscinin nomresi: {No}";
         }
     }
 }
